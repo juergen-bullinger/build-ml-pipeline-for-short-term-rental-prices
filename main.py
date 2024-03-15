@@ -95,13 +95,9 @@ def go(config: DictConfig):
                 "main",
                 version='main',
                 parameters={
-                    "": config["modeling"]["test_size"]
-                    "": config["modeling"]["val_size"]
-                    modeling
-                    "sample": config["etl"]["sample"],
-                    "artifact_name": "sample.csv",
-                    "artifact_type": "raw_data",
-                    "artifact_description": "Raw file as downloaded"
+                    "input_artifact": "sample.csv", # TODO: replace this
+                    "test_size": config["modeling"]["test_size"]
+                    "val_size": config["modeling"]["val_size"]
                 },
             )
 
