@@ -20,8 +20,7 @@ def go(args):
     # particular version of the artifact
     # artifact_local_path = run.use_artifact(args.input_artifact).file()
 
-    artifact = wandb.
-
+    artifact_local_path = run.use_artifact(args.input_artifact).file()
 
 if __name__ == "__main__":
 
@@ -30,22 +29,22 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--parameter1", 
-        type=## INSERT TYPE HERE: str, float or int,
-        help=## INSERT DESCRIPTION HERE,
+        type="string",
+        help="unspecified",
         required=True
     )
 
     parser.add_argument(
         "--parameter2", 
-        type=## INSERT TYPE HERE: str, float or int,
-        help=## INSERT DESCRIPTION HERE,
+        type="string",
+        help="unspecified",
         required=True
     )
 
     parser.add_argument(
         "--parameter3", 
-        type=## INSERT TYPE HERE: str, float or int,
-        help=## INSERT DESCRIPTION HERE,
+        type="string",
+        help="unspecified",
         required=True
     )
 

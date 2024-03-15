@@ -6,15 +6,15 @@ entry_points:
     parameters:
 
       parameter1:
-        description: ## ADD DESCRIPTION
+        description: parameter 1 no further info 
         type: string
 
       parameter2:
-        description: ## ADD DESCRIPTION
+        description: parameter 2 no further info 
         type: string
 
       parameter3:
-        description: ## ADD DESCRIPTION
+        description: parameter 3 no further info 
         type: string
 
 
