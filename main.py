@@ -61,11 +61,12 @@ def go(config: DictConfig):
                 "main",
                 version='main',
                 parameters={
-                    "project_name": config["main"]["project_name"],
-                    "sample": config["etl"]["sample"],
-                    "artifact_name": "sample.csv",
-                    "artifact_type": "raw_data",
-                    "artifact_description": "Raw file as downloaded"
+                    "input_artifact": config["etl"]["sample"], # TODO: check
+                    "output_artifact"; "split data",
+                    "output_type": "csv",
+                    "output_description": "split data",
+                    "min_price": config["etl"]["min_price"],
+                    "max_price": config["etl"]["max_price"],
                 },
             )
 
@@ -81,7 +82,7 @@ def go(config: DictConfig):
                     "csv": config["etl"]["sample"], # ???
                     "ref": config["etl"]["sample"], # ???
                     "kl_threshold": config["data_check"]["kl_threshold"],
-                    "min_price": config["etl"]["min_price"]"
+                    "min_price": config["etl"]["min_price"],
                     "max_price": config["etl"]["max_price"]
                 },
             )
@@ -114,7 +115,10 @@ def go(config: DictConfig):
             ##################
             # Implement here #
             ##################
-            _ = mlflow.run(
+            rf_params = {
+            }
+            rf_params.update()
+            _ = mlflow.run(config["modelling"]
                 os.path.join(root_path, "src", "train_random_forest"),
                 "main",
                 version='main',

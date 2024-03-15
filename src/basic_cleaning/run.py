@@ -28,26 +28,46 @@ if __name__ == "__main__":
 
 
     parser.add_argument(
-        "--parameter1", 
+        "--input_artifact", 
         type="string",
-        help="unspecified",
+        help="input_artifact",
         required=True
     )
 
     parser.add_argument(
-        "--parameter2", 
+        "--output_artifact", 
         type="string",
-        help="unspecified",
+        help="output_artifact",
         required=True
     )
 
     parser.add_argument(
-        "--parameter3", 
+        "--output_type", 
         type="string",
-        help="unspecified",
+        help="output_type",
         required=True
     )
 
+    parser.add_argument(
+        "--output_description", 
+        type="string",
+        help="output_description",
+        required=True
+    )
+
+    parser.add_argument(
+        "--min_price", 
+        type="float",
+        help="min value for the price",
+        required=True
+    )
+
+    parser.add_argument(
+        "--max_price", 
+        type="float",
+        help="max value for the price",
+        required=True
+    )
 
     args = parser.parse_args()
 

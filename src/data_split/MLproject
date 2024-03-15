@@ -8,12 +8,24 @@ entry_points:
         description: Input artifact
         type: string
 
-      val_size:
-        description: Size of the validation set
+      output_artifact:
+        description: Output artifact
+        type: string
+
+      output_type:
+        description: Type of the output artifact
+        type: string
+
+      output_description:
+        description: Description of the output artifact
+        type: string
+
+      min_prize:
+        description: Minimum value of the price column
         type: float
 
-      test_size:
-        description: Size of the test set
+      max_prize:
+        description: Maximum value of the price column
         type: float
 
     command: >-
