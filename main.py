@@ -78,10 +78,11 @@ def go(config: DictConfig):
                 "main",
                 version='main',
                 parameters={
-                    "sample": config["etl"]["sample"],
-                    "artifact_name": "sample.csv",
-                    "artifact_type": "raw_data",
-                    "artifact_description": "Raw file as downloaded"
+                    "csv": config["etl"]["sample"], # ???
+                    "ref": config["etl"]["sample"], # ???
+                    "kl_threshold": config["data_check"]["kl_threshold"],
+                    "min_price": config["etl"]["min_price"]"
+                    "max_price": config["etl"]["max_price"]
                 },
             )
 
@@ -94,6 +95,9 @@ def go(config: DictConfig):
                 "main",
                 version='main',
                 parameters={
+                    "": config["modeling"]["test_size"]
+                    "": config["modeling"]["val_size"]
+                    modeling
                     "sample": config["etl"]["sample"],
                     "artifact_name": "sample.csv",
                     "artifact_type": "raw_data",

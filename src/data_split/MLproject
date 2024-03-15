@@ -4,15 +4,17 @@ conda_env: conda.yml
 entry_points:
   main:
     parameters:
-
-      parameter1:
-        description: ## ADD DESCRIPTION
+      input_artifact:
+        description: Input artifact
         type: string
 
-      parameter2:
-        description: ## ADD DESCRIPTION
-        type: string
+      val_size:
+        description: Size of the validation set
+        type: float
 
+      test_size:
+        description: Size of the test set
+        type: float
 
     command: >-
-        python run.py  --parameter1 {parameter1}  --parameter2 {parameter2} 
+        python run.py  --val_size {val_size}  --test_size {test_size}  --input_artifact {input_artifact}

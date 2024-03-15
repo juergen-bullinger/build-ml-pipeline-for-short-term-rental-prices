@@ -20,30 +20,34 @@ def go(args):
     # particular version of the artifact
     # artifact_local_path = run.use_artifact(args.input_artifact).file()
 
-    ######################
-    # YOUR CODE HERE     #
-    ######################
+    artifact_local_path = run.use_artifact(args.input_artifact).file()
+    # TODO: to be continued
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Split the data in train/test")
 
-
     parser.add_argument(
-        "--parameter1", 
-        type=## INSERT TYPE HERE: str, float or int,
-        help=## INSERT DESCRIPTION HERE,
+        "--input_artifact", 
+        type="string",
+        help="the input artifact which needs to be split",
         required=True
     )
 
     parser.add_argument(
-        "--parameter2", 
-        type=## INSERT TYPE HERE: str, float or int,
-        help=## INSERT DESCRIPTION HERE,
+        "--test_size", 
+        type="float",
+        help="fraction of the input artifact to be used as test data",
         required=True
     )
 
+    parser.add_argument(
+        "--val_size", 
+        type="flaot",
+        help="fraction of the input artifact to be used as valid. data",
+        required=True
+    )
 
     args = parser.parse_args()
 
