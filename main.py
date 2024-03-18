@@ -32,7 +32,7 @@ def go(config: DictConfig):
     steps_par = config['main']['steps']
     active_steps = steps_par.split(",") if steps_par != "all" else _steps
 
-   # get the path at the root of the MLflow project
+    # get the path at the root of the MLflow project
     root_path = hydra.utils.get_original_cwd()
 
     # Move to a temporary directory
@@ -62,7 +62,7 @@ def go(config: DictConfig):
                 version='main',
                 parameters={
                     "input_artifact": config["etl"]["sample"], # TODO: check
-                    "output_artifact"; "split data",
+                    "output_artifact": "split data",
                     "output_type": "csv",
                     "output_description": "split data",
                     "min_price": config["etl"]["min_price"],
@@ -97,7 +97,7 @@ def go(config: DictConfig):
                 version='main',
                 parameters={
                     "input_artifact": "sample.csv", # TODO: replace this
-                    "test_size": config["modeling"]["test_size"]
+                    "test_size": config["modeling"]["test_size"],
                     "val_size": config["modeling"]["val_size"]
                 },
             )
@@ -118,7 +118,7 @@ def go(config: DictConfig):
             rf_params = {
             }
             rf_params.update()
-            _ = mlflow.run(config["modelling"]
+            _ = mlflow.run(config["modelling"],
                 os.path.join(root_path, "src", "train_random_forest"),
                 "main",
                 version='main',
