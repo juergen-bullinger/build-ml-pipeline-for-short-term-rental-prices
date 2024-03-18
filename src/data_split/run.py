@@ -30,14 +30,14 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--input_artifact", 
-        type="string",
+        type=str,
         help="the input artifact which needs to be split",
         required=True
     )
 
     parser.add_argument(
         "--test_size", 
-        type="float",
+        type=float,
         help="fraction of the input artifact to be used as test data",
         required=True
     )

@@ -1,11 +1,22 @@
+"""
+Full pipeline to train a RF estimator to predict short term rental prices
+
+Author: Jürgen Bullinger
+Date 11.03.2024
+"""
+
 import json
 
-import mlflow
-import tempfile
 import os
+import tempfile
+import logging
+import mlflow
 import wandb
 import hydra
 from omegaconf import DictConfig
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
+logger = logging.getLogger()
 
 _steps = [
     "download",
@@ -23,7 +34,20 @@ _steps = [
 # This automatically reads in the configuration
 @hydra.main(config_name='config')
 def go(config: DictConfig):
+    """
+    Do the processing - this function contains the full logic to execute
+    the pipeline.
 
+    Parameters
+    ----------
+    config : DictConfig
+        Automatically passed by hydra.
+
+    Returns
+    -------
+    None.
+
+    """
     # Setup the wandb experiment. All runs will be grouped under this name
     os.environ["WANDB_PROJECT"] = config["main"]["project_name"]
     os.environ["WANDB_RUN_GROUP"] = config["main"]["experiment_name"]
@@ -37,11 +61,13 @@ def go(config: DictConfig):
 
     # Move to a temporary directory
     with tempfile.TemporaryDirectory() as tmp_dir:
-
+        components_repository = config['main']['components_repository']
+        
         if "download" in active_steps:
             # Download file and load in W&B
+            logger.info("starting download step...")
             _ = mlflow.run(
-                f"{config['main']['components_repository']}/get_data",
+                f"{components_repository}/get_data",
                 "main",
                 version='main',
                 parameters={
@@ -52,18 +78,31 @@ def go(config: DictConfig):
                 },
             )
 
+        if "eda" in active_steps:
+            ##################
+            # Implement here #
+            ##################
+            logger.info("starting eda step...")
+            _ = mlflow.run(
+                os.path.join(root_path, "src", "eda"),
+                "main",
+                #version='main',
+                parameters={},
+            )
+            
         if "basic_cleaning" in active_steps:
             ##################
             # Implement here #
             ##################
+            logger.info("starting basic_cleaning step...")
             _ = mlflow.run(
                 os.path.join(root_path, "src", "basic_cleaning"),
                 "main",
-                version='main',
+                #version='main',
                 parameters={
-                    "input_artifact": config["etl"]["sample"], # TODO: check
-                    "output_artifact": "split data",
-                    "output_type": "csv",
+                    "input_artifact": "sample.csv",
+                    "output_artifact": "clean_sample.csv",
+                    "output_type": "clean_data",
                     "output_description": "split data",
                     "min_price": config["etl"]["min_price"],
                     "max_price": config["etl"]["max_price"],
@@ -74,10 +113,11 @@ def go(config: DictConfig):
             ##################
             # Implement here #
             ##################
+            logger.info("starting data_check step...")
             _ = mlflow.run(
                 os.path.join(root_path, "src", "data_check"),
                 "main",
-                version='main',
+                #version='main',
                 parameters={
                     "csv": config["etl"]["sample"], # ???
                     "ref": config["etl"]["sample"], # ???
@@ -91,8 +131,19 @@ def go(config: DictConfig):
             ##################
             # Implement here #
             ##################
+            logger.info("starting data_split step...")
+            #_ = mlflow.run(
+            #    os.path.join(root_path, "src", "data_split"),
+            #    "main",
+            #    #version='main',
+            #    parameters={
+            #        "input_artifact": "sample.csv", # TODO: replace this
+            #        "test_size": config["modeling"]["test_size"],
+            #        "val_size": config["modeling"]["val_size"]
+            #    },
+            #)
             _ = mlflow.run(
-                os.path.join(root_path, "src", "data_split"),
+                f"{components_repository}/train_val_test_split",
                 "main",
                 version='main',
                 parameters={
@@ -109,19 +160,20 @@ def go(config: DictConfig):
             with open(rf_config, "w+") as fp:
                 json.dump(dict(config["modeling"]["random_forest"].items()), fp)  # DO NOT TOUCH
 
-            # NOTE: use the rf_config we just created as the rf_config parameter for the train_random_forest
-            # step
+            # NOTE: use the rf_config we just created as the rf_config 
+            # parameter for the train_random_forest step
 
             ##################
             # Implement here #
             ##################
+            logger.info("starting train_random_forest step...")
             rf_params = {
             }
             rf_params.update()
             _ = mlflow.run(config["modelling"],
                 os.path.join(root_path, "src", "train_random_forest"),
                 "main",
-                version='main',
+                #version='main',
                 parameters={
                     "sample": config["etl"]["sample"],
                     "artifact_name": "sample.csv",
@@ -135,10 +187,11 @@ def go(config: DictConfig):
             ##################
             # Implement here #
             ##################
+            logger.info("starting test_regression_model step...")
             _ = mlflow.run(
                 os.path.join(root_path, "src", "test_regression_model"),
                 "main",
-                version='main',
+                #version='main',
                 parameters={
                     "sample": config["etl"]["sample"],
                     "artifact_name": "sample.csv",
