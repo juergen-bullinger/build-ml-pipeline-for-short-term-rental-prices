@@ -119,8 +119,8 @@ def go(config: DictConfig):
                 "main",
                 #version='main',
                 parameters={
-                    "csv": config["etl"]["sample"], # ???
-                    "ref": config["etl"]["sample"], # ???
+                    "csv": "clean_sample.csv", # ???
+                    "ref": "sample.csv", # ???
                     "kl_threshold": config["data_check"]["kl_threshold"],
                     "min_price": config["etl"]["min_price"],
                     "max_price": config["etl"]["max_price"]

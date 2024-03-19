@@ -11,13 +11,34 @@ def pytest_addoption(parser):
     parser.addoption("--max_price", action="store")
 
 
+def _get_versioned_artifact(artifact):
+    """
+    append :latest if artifact does not contain a version reference
+
+    Parameters
+    ----------
+    artifact : str
+        artifact spec.
+
+    Returns
+    -------
+    the versioned artifact reference.
+    """
+    if ":" not in artifact:
+        return f"{artifact}:latest"
+    else:
+        return artifact
+    
+
 @pytest.fixture(scope='session')
 def data(request):
     run = wandb.init(job_type="data_tests", resume=True)
 
     # Download input artifact. This will also note that this script is using this
     # particular version of the artifact
-    data_path = run.use_artifact(request.config.option.csv).file()
+    data_path = run.use_artifact(
+        _get_versioned_artifact(request.config.option.csv)
+    ).file()
 
     if data_path is None:
         pytest.fail("You must provide the --csv option on the command line")
@@ -33,7 +54,9 @@ def ref_data(request):
 
     # Download input artifact. This will also note that this script is using this
     # particular version of the artifact
-    data_path = run.use_artifact(request.config.option.ref).file()
+    data_path = run.use_artifact(
+        _get_versioned_artifact(request.config.option.ref)
+    ).file()
 
     if data_path is None:
         pytest.fail("You must provide the --ref option on the command line")
