@@ -132,30 +132,19 @@ def go(config: DictConfig):
             # Implement here #
             ##################
             logger.info("starting data_split step...")
-            #_ = mlflow.run(
-            #    os.path.join(root_path, "src", "data_split"),
-            #    "main",
-            #    #version='main',
-            #    parameters={
-            #        "input_artifact": "sample.csv", # TODO: replace this
-            #        "test_size": config["modeling"]["test_size"],
-            #        "val_size": config["modeling"]["val_size"]
-            #    },
-            #)
             _ = mlflow.run(
-                f"{components_repository}/train_val_test_split",
+                os.path.join(root_path, "src", "data_split"),
                 "main",
-                version='main',
+                #version='main',
                 parameters={
                     "input_artifact": "sample.csv", # TODO: replace this
                     "test_size": config["modeling"]["test_size"],
                     "val_size": config["modeling"]["val_size"],
                     "random_seed": config["modeling"]["random_seed"],
                     "stratify_by": config["modeling"]["stratify_by"],
-
-                },
+               },
             )
-
+ 
         if "train_random_forest" in active_steps:
 
             # NOTE: we need to serialize the random forest configuration into JSON
@@ -178,10 +167,13 @@ def go(config: DictConfig):
                 "main",
                 #version='main',
                 parameters={
-                    "sample": config["etl"]["sample"],
-                    "artifact_name": "sample.csv",
-                    "artifact_type": "raw_data",
-                    "artifact_description": "Raw file as downloaded"
+                    "trainval_artifact": "trainval_data.csv",
+                    "val_size": config["modeling"]["val_size"],
+                    "random_seed": config["modeling"]["random_seed"],
+                    "stratify_by": config["modeling"]["stratify_by"],
+                    "rf_config": config["modeling"]["random_forest"],
+                    "max_tfidf_features": config["modeling"]["max_tfidf_features"],
+                    "output_artifact": "random_forest_export",                    
                 },
             )
 

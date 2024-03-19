@@ -15,6 +15,26 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
 
+def _get_versioned_artifact(artifact):
+    """
+    append :latest if artifact does not contain a version reference
+
+    Parameters
+    ----------
+    artifact : str
+        artifact spec.
+
+    Returns
+    -------
+    the versioned artifact reference.
+    """
+    if ":" not in artifact:
+        return f"{artifact}:latest"
+    else:
+        return artifact
+
+
+
 def go(args):
 
     run = wandb.init(job_type="data_split")
@@ -24,7 +44,8 @@ def go(args):
     # particular version of the artifact
     # artifact_local_path = run.use_artifact(args.input_artifact).file()
 
-    artifact_local_path = run.use_artifact(args.input_artifact).file()
+    input_artifact_name = _get_versioned_artifact(args.input_artifact)
+    artifact_local_path = run.use_artifact(input_artifact_name).file()
     df = pd.read_csv(artifact_local_path)
     splits = {}
     splits["trainval"], splits["test"] = train_test_split(
@@ -50,7 +71,7 @@ def go(args):
     
             artifact = wandb.Artifact(
                 name=artifact_name,
-                type=args.artifact_type,
+                type="split_data",
                 description=f"{split} split of dataset {args.input_artifact}",
             )
             artifact.add_file(temp_path)
