@@ -334,7 +334,9 @@ with the cleaned data:
     artifact.add_file("clean_sample.csv")
     run.log_artifact(artifact)
    ```
-   
+
+# ----
+
    **_REMEMBER__**: Whenever you are using a library (like pandas), you MUST add it as 
                     dependency in the ``conda.yml`` file. For example, here we are using pandas 
                     so we must add it to ``conda.yml`` file, including a version:
