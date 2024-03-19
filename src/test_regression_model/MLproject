@@ -5,14 +5,16 @@ entry_points:
   main:
     parameters:
 
-      parameter1:
-        description: ## ADD DESCRIPTION
+      mlflow_model:
+        description: Trained random forest model marked for production
         type: string
 
-      parameter2:
-        description: ## ADD DESCRIPTION
+      test_artifact:
+        description: Test data to perform a test on the production model
         type: string
 
 
     command: >-
-        python run.py  --parameter1 {parameter1}  --parameter2 {parameter2} 
+        python run.py \
+            --mlflow_model {mlflow_model} \
+            --test_artifact {test_artifact} 

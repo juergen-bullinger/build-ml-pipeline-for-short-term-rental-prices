@@ -13,6 +13,7 @@ import json
 
 import pandas as pd
 import numpy as np
+from mlflow.models import infer_signature
 from sklearn.compose import ColumnTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.impute import SimpleImputer
@@ -38,15 +39,37 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
 
+def _get_versioned_artifact(artifact):
+    """
+    append :latest if artifact does not contain a version reference
+
+    Parameters
+    ----------
+    artifact : str
+        artifact spec.
+
+    Returns
+    -------
+    the versioned artifact reference.
+    """
+    if ":" not in artifact:
+        return f"{artifact}:latest"
+    else:
+        return artifact
+
+
 def go(args):
 
     run = wandb.init(job_type="train_random_forest")
     run.config.update(args)
 
+    logger.info("using string representation for random forest configuration %s", args.rf_config)
     # Get the Random Forest configuration and update W&B
-    with open(args.rf_config) as fp:
-        rf_config = json.load(fp)
-    run.config.update(rf_config)
+    #with open(args.rf_config) as fp:
+    #    rf_config = json.load(fp)
+    rf_config = eval(args.rf_config)
+    #run.config.update(rf_config)
+    logger.info("this results in random forest configuration %s", rf_config)
 
     # Fix the random seed for the Random Forest, so we get reproducible results
     rf_config['random_state'] = args.random_seed
@@ -100,11 +123,24 @@ def go(args):
     # Save the sk_pipe pipeline as a mlflow.sklearn model in the directory "random_forest_dir"
     # HINT: use mlflow.sklearn.save_model
     os.mkdir(export_path)
+    # Get the columns that we are really using from the pipeline
+    logger.info("infering signature for:")
+    logger.info("X_val  of type %s", type(X_val))
+    logger.info("y_pred of type %s", type(y_pred))
+    logger.info("Info about X_val %s", X_val.info())
+    
+    data_preparation_pipe = sk_pipe[:-1]
+    data_out = data_preparation_pipe.transform(X_val)
+    #feature_names_out = sk_pipe[:-1].get_feature_names_out()
+    signature = infer_signature(
+        pd.DataFrame(data_out, index=X_val.index), # columns=feature_names_out,  
+        pd.Series(y_pred, index=X_val.index)
+    )
     mlflow.sklearn.save_model(
         sk_pipe,
         export_path,
         serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
-        signature=signature,
+        #signature=signature,
         input_example=X_val.iloc[:2],
     )
     ######################################
@@ -136,7 +172,11 @@ def go(args):
     # Here we save r_squared under the "r2" key
     run.summary['r2'] = r_squared
     # Now log the variable "mae" under the key "mae".
-    # YOUR CODE HERE
+    wandb.log(
+        	{
+        	  "mae": mae,
+        	}
+    )
     ######################################
 
     # Upload to W&B the feture importance visualization
@@ -178,7 +218,10 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     # Build a pipeline with two steps:
     # 1 - A SimpleImputer(strategy="most_frequent") to impute missing values
     # 2 - A OneHotEncoder() step to encode the variable
-    non_ordinal_categorical_preproc = # YOUR CODE HERE
+    non_ordinal_categorical_preproc = make_pipeline(
+        SimpleImputer(strategy="most_frequent"),
+        OneHotEncoder(),
+    )
     ######################################
 
     # Let's impute the numerical columns to make sure we can handle missing values
@@ -237,7 +280,12 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     # ColumnTransformer instance that we saved in the `preprocessor` variable, and a step called "random_forest"
     # with the random forest instance that we just saved in the `random_forest` variable.
     # HINT: Use the explicit Pipeline constructor so you can assign the names to the steps, do not use make_pipeline
-    sk_pipe = # YOUR CODE HERE
+    sk_pipe = Pipeline(
+        	steps=[
+            	("preprocessor", preprocessor),
+            	("random_forest",random_Forest),
+            ]
+    )
 
     return sk_pipe, processed_features
 

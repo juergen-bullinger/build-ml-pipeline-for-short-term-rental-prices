@@ -51,7 +51,7 @@ def go(args):
     splits["trainval"], splits["test"] = train_test_split(
         df,
         test_size=args.test_size,
-        random_state=args.random_state,
+        random_state=args.random_seed,
         stratify=df[args.stratify] if args.stratify_by != 'null' else None,
     )
 

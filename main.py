@@ -10,6 +10,7 @@ import json
 import os
 import tempfile
 import logging
+import json
 import mlflow
 import wandb
 import hydra
@@ -27,7 +28,7 @@ _steps = [
     # NOTE: We do not include this in the steps so it is not run by mistake.
     # You first need to promote a model export to "prod" before you can run this,
     # then you need to run this step explicitly
-#    "test_regression_model"
+    # "test_regression_model"
 ]
 
 
@@ -162,7 +163,7 @@ def go(config: DictConfig):
             rf_params = {
             }
             rf_params.update()
-            _ = mlflow.run(config["modelling"],
+            _ = mlflow.run(
                 os.path.join(root_path, "src", "train_random_forest"),
                 "main",
                 #version='main',
@@ -188,10 +189,8 @@ def go(config: DictConfig):
                 "main",
                 #version='main',
                 parameters={
-                    "sample": config["etl"]["sample"],
-                    "artifact_name": "sample.csv",
-                    "artifact_type": "raw_data",
-                    "artifact_description": "Raw file as downloaded"
+                    "mlflow_model": "random_forest_export:prod",
+                    "test_artifact": "test_data.csv:latest",
                 },
             )
 

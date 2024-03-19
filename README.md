@@ -176,14 +176,14 @@ You can see the parameters that they require by looking into their `MLproject` f
 - `train_val_test_split`: segrgate the data (splits the data) [MLproject](https://github.com/udacity/build-ml-pipeline-for-short-term-rental-prices/blob/main/components/train_val_test_split/MLproject)
 
 ## In case of errors
+> conda info --envs | grep mlflow | cu
 When you make an error writing your `conda.yml` file, you might end up with an environment for the pipeline or one
 of the components that is corrupted. Most of the time `mlflow` realizes that and creates a new one every time you try
 to fix the problem. However, sometimes this does not happen, especially if the problem was in the `pip` dependencies.
 In that case, you might want to clean up all conda environments created by `mlflow` and try again. In order to do so,
 you can get a list of the environments you are about to remove by executing:
 
-```
-> conda info --envs | grep mlflow | cut -f1 -d" "
+```t -f1 -d" "
 ```
 
 If you are ok with that list, execute this command to clean them up:
